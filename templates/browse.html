@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .browse-section { padding: 60px 20px; }
+    .browse-header { text-align: center; margin-bottom: 40px; }
+    .browse-header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+    .browse-header p { color: #666; }
+    .search-bar { display: flex; gap: 10px; max-width: 600px; margin: 0 auto 40px; }
+    .search-input { flex: 1; padding: 15px; border: 2px solid #eee; border-radius: 25px; font-size: 1rem; }
+    .book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; max-width: 1200px; margin: 0 auto; }
+    .book-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+    .book-image { height: 150px; background: #fff3d9; display: flex; align-items: center; justify-content: center; font-size: 4rem; }
+    .book-info { padding: 20px; }
+    .book-info h3 { font-size: 1rem; margin-bottom: 5px; }
+    .author { color: #666; font-size: 0.9rem; margin-bottom: 10px; }
+    .condition { display: inline-block; padding: 3px 10px; background: #fff8e7; color: #f5a623; border-radius: 10px; font-size: 0.75rem; margin-bottom: 10px; }
+    .price { font-size: 1.2rem; font-weight: bold; color: #f5a623; margin-bottom: 15px; }
+</style>
+
+<section class="browse-section">
+    <div class="browse-header">
+        <h1>🐝 Browse Books</h1>
+        <p>Find your next favorite read</p>
+    </div>
+    
+    <div class="search-bar">
+        <input type="text" class="search-input" placeholder="Search books...">
+        <button class="btn btn-primary">Search</button>
+    </div>
+    
+    <div class="book-grid">
+        {% for book in books %}
+        <div class="book-card">
+            <div class="book-image">{{ book.image }}</div>
+            <div class="book-info">
+                <h3>{{ book.title }}</h3>
+                <p class="author">{{ book.author }}</p>
+                <span class="condition">{{ book.condition }}</span>
+                <p class="price">${{ "%.2f"|format(book.price) }}</p>
+                <button class="btn btn-primary" style="width:100%">Add to Cart</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

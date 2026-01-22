@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .hero { background: linear-gradient(135deg, #f5a623, #e09000); color: white; padding: 100px 20px; text-align: center; }
+    .hero-logo { font-size: 5rem; margin-bottom: 20px; }
+    .hero h1 { font-size: 3rem; margin-bottom: 10px; }
+    .hero p { font-size: 1.2rem; margin-bottom: 30px; }
+    .hero-buttons { display: flex; gap: 15px; justify-content: center; }
+    .hero .btn-primary { background: white; color: #f5a623; }
+    .hero .btn-outline { border-color: white; color: white; }
+    
+    .features { padding: 80px 20px; background: white; }
+    .features h2 { text-align: center; margin-bottom: 50px; }
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; }
+    .feature-card { text-align: center; padding: 30px; background: #fffbf0; border-radius: 15px; }
+    .feature-icon { font-size: 3rem; margin-bottom: 15px; }
+    .feature-card h3 { color: #f5a623; margin-bottom: 10px; }
+    
+    .books-section { padding: 80px 20px; }
+    .books-section h2 { text-align: center; margin-bottom: 40px; }
+    .book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; max-width: 1200px; margin: 0 auto; }
+    .book-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+    .book-image { height: 150px; background: #fff3d9; display: flex; align-items: center; justify-content: center; font-size: 4rem; }
+    .book-info { padding: 20px; }
+    .book-info h3 { font-size: 1rem; margin-bottom: 5px; }
+    .author { color: #666; font-size: 0.9rem; margin-bottom: 10px; }
+    .condition { display: inline-block; padding: 3px 10px; background: #fff8e7; color: #f5a623; border-radius: 10px; font-size: 0.75rem; margin-bottom: 10px; }
+    .price { font-size: 1.2rem; font-weight: bold; color: #f5a623; margin-bottom: 15px; }
+    
+    .cta { background: #333; color: white; padding: 80px 20px; text-align: center; }
+    .cta h2 { margin-bottom: 15px; }
+    .cta p { margin-bottom: 30px; }
+</style>
+
+<section class="hero">
+    <div class="hero-logo">🐝</div>
+    <h1>Beeside the Books</h1>
+    <p>Your buzzing marketplace for used books!</p>
+    <div class="hero-buttons">
+        <a href="/browse" class="btn btn-primary">Start Shopping</a>
+        <a href="/register" class="btn btn-outline">Sell Your Books</a>
+    </div>
+</section>
+
+<section class="features">
+    <h2>Why Choose Beeside the Books?</h2>
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">💰</div>
+            <h3>Sweet Prices</h3>
+            <p>Save up to 90% off retail</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🌻</div>
+            <h3>Bee Sustainable</h3>
+            <p>Give books a second life</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📦</div>
+            <h3>Easy Shipping</h3>
+            <p>Simple shipping options</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⭐</div>
+            <h3>Quality Guaranteed</h3>
+            <p>All books reviewed</p>
+        </div>
+    </div>
+</section>
+
+<section class="books-section">
+    <h2>🍯 Featured Books</h2>
+    <div class="book-grid">
+        {% for book in books %}
+        <div class="book-card">
+            <div class="book-image">{{ book.image }}</div>
+            <div class="book-info">
+                <h3>{{ book.title }}</h3>
+                <p class="author">{{ book.author }}</p>
+                <span class="condition">{{ book.condition }}</span>
+                <p class="price">${{ "%.2f"|format(book.price) }}</p>
+                <button class="btn btn-primary" style="width:100%">Add to Cart</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="cta">
+    <h2>🐝 Ready to join the hive?</h2>
+    <p>Turn your old books into cash!</p>
+    <a href="/register" class="btn btn-primary">Start Selling Today</a>
+</section>
+{% endblock %}
