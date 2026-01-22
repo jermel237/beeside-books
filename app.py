@@ -1,10 +1,54 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from database import init_db, add_user, get_user, add_book, get_all_books, get_user_books
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+
+# ============== IN-MEMORY DATABASE ==============
+users = []
+books = []
+user_id_counter = 1
+book_id_counter = 1
+
+def init_db():
+    pass
+
+def add_user(username, email, password):
+    global user_id_counter
+    users.append({
+        'id': user_id_counter,
+        'username': username,
+        'email': email,
+        'password': password
+    })
+    user_id_counter += 1
+
+def get_user(email):
+    for user in users:
+        if user['email'] == email:
+            return (user['id'], user['username'], user['email'], user['password'])
+    return None
+
+def add_book(user_id, title, author, price, condition):
+    global book_id_counter
+    books.append({
+        'id': book_id_counter,
+        'user_id': user_id,
+        'title': title,
+        'author': author,
+        'price': price,
+        'condition': condition
+    })
+    book_id_counter += 1
+
+def get_all_books():
+    return [{"title": b['title'], "author": b['author'], "price": b['price'], "condition": b['condition'], "image": "📚"} for b in books]
+
+def get_user_books(user_id):
+    return [(b['id'], b['user_id'], b['title'], b['author'], b['price'], b['condition']) for b in books if b['user_id'] == user_id]
+
+# ============== END DATABASE ==============
 
 # Initialize database
 init_db()
@@ -25,8 +69,8 @@ def index():
 
 @app.route('/browse')
 def browse():
-    books = get_all_books()
-    all_books = sample_books + books
+    db_books = get_all_books()
+    all_books = sample_books + db_books
     return render_template('browse.html', books=all_books)
 
 @app.route('/register', methods=['GET', 'POST'])
