@@ -1,108 +1,101 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<style>
-    .dashboard { padding: 40px 20px; max-width: 1200px; margin: 0 auto; }
-    .dashboard h1 { margin-bottom: 30px; }
-    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 40px; }
-    .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-    .card h3 { color: #f5a623; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
-    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center; }
-    .stat-number { font-size: 2rem; font-weight: bold; color: #f5a623; }
-    .stat-label { color: #666; font-size: 0.9rem; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; margin-bottom: 5px; font-weight: 600; }
-    .form-group input, .form-group select { width: 100%; padding: 10px; border: 2px solid #eee; border-radius: 10px; }
-    .my-books h2 { margin-bottom: 20px; }
-    table { width: 100%; background: white; border-radius: 15px; overflow: hidden; }
-    th, td { padding: 15px; text-align: left; }
-    th { background: #f5a623; color: white; }
-    tr:nth-child(even) { background: #fffbf0; }
-    .empty { text-align: center; padding: 60px; background: white; border-radius: 15px; color: #666; }
-</style>
-
-<section class="dashboard">
-    <h1>🐝 Welcome, {{ session.username }}!</h1>
-    
-    <div class="dashboard-grid">
-        <div class="card">
-            <h3>🍯 Your Stats</h3>
-            <div class="stats">
-                <div>
-                    <span class="stat-number">{{ books|length }}</span>
-                    <span class="stat-label">Books Listed</span>
+<section class="dashboard-section">
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>🐝 Welcome, {{ session.username }}!</h1>
+            <p>Manage your books and sales</p>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="dashboard-card stats-card">
+                <h3>🍯 Your Stats</h3>
+                <div class="stats-grid">
+                    <div class="stat">
+                        <span class="stat-number">{{ books|length }}</span>
+                        <span class="stat-label">Books Listed</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">0</span>
+                        <span class="stat-label">Books Sold</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">$0.00</span>
+                        <span class="stat-label">Total Honey</span>
+                    </div>
                 </div>
-                <div>
-                    <span class="stat-number">0</span>
-                    <span class="stat-label">Books Sold</span>
-                </div>
-                <div>
-                    <span class="stat-number">$0</span>
-                    <span class="stat-label">Earnings</span>
-                </div>
+            </div>
+            
+            <div class="dashboard-card sell-card">
+                <h3>📚 List a New Book</h3>
+                <form method="POST" action="{{ url_for('sell_book') }}" class="sell-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="title">Book Title</label>
+                            <input type="text" id="title" name="title" placeholder="Enter book title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="author">Author</label>
+                            <input type="text" id="author" name="author" placeholder="Enter author name" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="price">Price ($)</label>
+                            <input type="number" id="price" name="price" step="0.01" min="0.01" placeholder="0.00" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="condition">Condition</label>
+                            <select id="condition" name="condition" required>
+                                <option value="New">New</option>
+                                <option value="Like New">Like New</option>
+                                <option value="Good">Good</option>
+                                <option value="Acceptable">Acceptable</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">List Book for Sale</button>
+                </form>
             </div>
         </div>
         
-        <div class="card">
-            <h3>📚 List a Book</h3>
-            <form method="POST" action="/sell">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Title</label>
-                        <input type="text" name="title" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Author</label>
-                        <input type="text" name="author" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Price ($)</label>
-                        <input type="number" name="price" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Condition</label>
-                        <select name="condition" required>
-                            <option value="New">New</option>
-                            <option value="Like New">Like New</option>
-                            <option value="Good">Good</option>
-                            <option value="Acceptable">Acceptable</option>
-                        </select>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary">List Book</button>
-            </form>
+        <div class="my-books">
+            <h2>📖 Your Listed Books</h2>
+            {% if books %}
+            <div class="book-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Condition</th>
+                            <th>Price</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in books %}
+                        <tr>
+                            <td>{{ book[2] }}</td>
+                            <td>{{ book[3] }}</td>
+                            <td><span class="condition">{{ book[5] }}</span></td>
+                            <td class="price">${{ "%.2f"|format(book[4]) }}</td>
+                            <td>
+                                <button class="btn btn-small btn-outline">Edit</button>
+                                <button class="btn btn-small btn-danger">Delete</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>🐝 You haven't listed any books yet. Start selling above!</p>
+            </div>
+            {% endif %}
         </div>
-    </div>
-    
-    <div class="my-books">
-        <h2>📖 Your Books</h2>
-        {% if books %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Author</th>
-                    <th>Price</th>
-                    <th>Condition</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for book in books %}
-                <tr>
-                    <td>{{ book[2] }}</td>
-                    <td>{{ book[3] }}</td>
-                    <td>${{ "%.2f"|format(book[4]) }}</td>
-                    <td>{{ book[5] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <div class="empty">🐝 No books listed yet. Add one above!</div>
-        {% endif %}
     </div>
 </section>
 {% endblock %}
